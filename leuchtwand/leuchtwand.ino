@@ -11,7 +11,7 @@
 #define LED_PIN     8
 
 // How many NeoPixels are attached to the Arduino?
-#define LED_COUNT  300
+#define LED_COUNT  92
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 #define BRIGHTNESS 200 // Set BRIGHTNESS to about 1/5 (max = 255)
@@ -28,11 +28,34 @@ int oskar_K[] = {39,40,41,42,43,44,45,46,47,48,49,50,51,52};
 int oskar_A[] = {53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72};
 int oskar_R[] = {73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92};
 
+int c1[] = {0,1,2,3,4,5,6,7};
+int c2[] = {7,-1,-1,-1,-1,-1,19};
+int c3[] = {8,-1,-1,-1,-1,-1,18};
+int c4[] = {9,-1,-1,-1,-1,-1,17};
+int c5[] = {10,11,12,13,14,15,16};
+int c6[] = {39,40,41,42,43,44,45};
+int c7[] = {-1,-1,-1,46,-1,-1,-1};
+int c8[] = {-1,-1,47,-1,50,-1,-1};
+int c9[] = {-1,48,-1,-1,-1,51,-1};
+int c10[]= {49,-1,-1,-1,-1,-1,52};
+
+const int rows = 7;
+const int columns = 10;
+
+int matrix[rows][columns];
+
 void setup() {
 
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);
+
+
+  for(int r = 0; r<rows; r++) {
+    for (int c = 0; c<columns; c++) {
+      matrix[r][c] = c1[r];
+    }
+  }
   
 }
 
@@ -42,18 +65,14 @@ void loop() {
   delay(1000);
   show_oskar_s(strip.ColorHSV(55000, 255, 200));
   delay(1000);
-  show_oskar_k(strip.Color(255,   255,   255, 0));
-  delay(1000);
-  show_oskar_a(strip.Color(255,   0,   255, 0));
-  delay(1000);
-  show_oskar_r(strip.Color(0,   255,   0, 0));
-  delay(1000);
+  strip.clear();
 
   
+  colorZini(strip.Color(255,   0,   0)     , 50); // Red
+  strip.clear();
+    
   // Fill along the length of the strip in various colors...
   colorWipe(strip.Color(255,   0,   0)     , 50); // Red
-  colorWipe(strip.Color(  0, 255,   0)     , 50); // Green
-  colorWipe(strip.Color(  0,   0, 255)     , 50); // Blue
   colorWipe(strip.Color(  0,   0,   0, 255), 50); // True white (not RGB white)
 
   whiteOverRainbow(75, 5);
@@ -93,12 +112,21 @@ void show_oskar_r(uint32_t color) {
   strip.show();                                           //  Update strip to match
 }
 
+void colorZini(uint32_t color, int wait) {
+  for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
+    strip.clear();
+    strip.setPixelColor(i, strip.ColorHSV(55000, 255, 250));         //  Set pixel's color (in RAM)
+    strip.setPixelColor(i-1,strip.ColorHSV(55000, 255, 200));         //  Set pixel's color (in RAM)
+    strip.setPixelColor(i-2,strip.ColorHSV(55000, 255, 150));         //  Set pixel's color (in RAM)
+    strip.setPixelColor(i-3,strip.ColorHSV(55000, 255, 100));         //  Set pixel's color (in RAM)
+    strip.setPixelColor(i-4,strip.ColorHSV(55000, 255, 50));         //  Set pixel's color (in RAM) 
+    strip.setPixelColor(i-4,strip.ColorHSV(55000, 255, 10));         //  Set pixel's color (in RAM) 
+             
+    strip.show();                          //  Update strip to match
+    delay(wait);                           //  Pause for a moment
+  }
+}
 
-// Fill strip pixels one after another with a color. Strip is NOT cleared
-// first; anything there will be covered pixel by pixel. Pass in color
-// (as a single 'packed' 32-bit value, which you can get by calling
-// strip.Color(red, green, blue) as shown in the loop() function above),
-// and a delay time (in milliseconds) between pixels.
 void colorWipe(uint32_t color, int wait) {
   for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
     strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
