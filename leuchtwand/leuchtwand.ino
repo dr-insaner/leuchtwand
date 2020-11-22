@@ -6,15 +6,13 @@
  #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
-// Which pin on the Arduino is connected to the NeoPixels?
-// On a Trinket or Gemma we suggest changing this to 1:
 #define LED_PIN     8
 
 // How many NeoPixels are attached to the Arduino?
-#define LED_COUNT  92
+#define LED_COUNT  200
 
 // NeoPixel brightness, 0 (min) to 255 (max)
-#define BRIGHTNESS 200 // Set BRIGHTNESS to about 1/5 (max = 255)
+#define BRIGHTNESS 255 // Set BRIGHTNESS to about 1/5 (max = 255)
 
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
@@ -22,12 +20,20 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
 // Argument 2 = Arduino pin number (most are valid)
 // Argument 3 = Pixel type flags, add together as needed:
 
+//Die LEDs der einzelnen Buchstaben definieren für irgendwelche Effekte
 int oskar_O[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
 int oskar_S[] = {20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38};
 int oskar_K[] = {39,40,41,42,43,44,45,46,47,48,49,50,51,52};
 int oskar_A[] = {53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72};
 int oskar_R[] = {73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92};
 
+int iva_1[] = {0,1,2,3,4,5};
+int iva_I[] = {6,7,8,9,10,11,12,13,14,15,16};
+int iva_V[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30};
+int iva_A[] = {31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50};
+int iva_2[] = {51,52,53,54,55,56};
+
+//Hier möchte ich eine MAtrix definieren die aus den folgenden Spalten besteht. Da wo -1 ist gibt es keine LED
 int c1[] = {0,1,2,3,4,5,6,7};
 int c2[] = {7,-1,-1,-1,-1,-1,19};
 int c3[] = {8,-1,-1,-1,-1,-1,18};
@@ -45,12 +51,13 @@ const int columns = 10;
 int matrix[rows][columns];
 
 void setup() {
+  Serial.begin(9600);
 
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);
 
-
+//hier der erste Versuch aus den 1D arrays ein 2D array zu machen
   for(int r = 0; r<rows; r++) {
     for (int c = 0; c<columns; c++) {
       matrix[r][c] = c1[r];
@@ -61,9 +68,25 @@ void setup() {
 
 void loop() {
 
-  show_oskar_o(strip.Color(255,   0,   0, 0));
+  show_letter(strip.Color(255,   0,   0, 0), oskar_O, *(&oskar_O + 1) - oskar_O, "oskar");
   delay(1000);
-  show_oskar_s(strip.ColorHSV(55000, 255, 200));
+  show_letter(strip.ColorHSV(65000, 255, 200), oskar_S, *(&oskar_S + 1) - oskar_S, "oskar");
+  delay(1000);
+  show_letter(strip.ColorHSV(60000, 255, 200), oskar_K, *(&oskar_K + 1) - oskar_K, "oskar");
+  delay(1000);
+  show_letter(strip.ColorHSV(55000, 255, 200), oskar_A, *(&oskar_A + 1) - oskar_A, "oskar");
+  delay(1000);
+  show_letter(strip.ColorHSV(50000, 255, 200), oskar_R, *(&oskar_R + 1) - oskar_R, "oskar");
+  delay(1000);
+  show_letter(strip.ColorHSV(45000, 255, 200), iva_1, *(&iva_1 + 1) - iva_1, "iva");
+  delay(1000);
+  show_letter(strip.ColorHSV(40000, 255, 200), iva_I, *(&iva_I + 1) - iva_I, "iva");
+  delay(1000);
+  show_letter(strip.ColorHSV(35000, 255, 200), iva_V, *(&iva_V + 1) - iva_V, "iva");
+  delay(1000);
+  show_letter(strip.ColorHSV(30000, 255, 200), iva_A, *(&iva_A + 1) - iva_A, "iva");
+  delay(1000);
+  show_letter(strip.ColorHSV(25000, 255, 200), iva_2, *(&iva_2 + 1) - iva_2, "iva");
   delay(1000);
   strip.clear();
 
@@ -82,45 +105,27 @@ void loop() {
   rainbowFade2White(3, 3, 1);
 }
 
-void show_oskar_o(uint32_t color) {
-  strip.clear();
-  strip.fill(color,  oskar_O[0], *(&oskar_O + 1) - oskar_O);        //  Set pixel's color (in RAM)
-  strip.show();                                           //  Update strip to match
-}
-
-void show_oskar_s(uint32_t color) {
-  strip.clear();
-  strip.fill(color, oskar_S[0], *(&oskar_S + 1) - oskar_S);        //  Set pixel's color (in RAM)
-  strip.show();                                           //  Update strip to match
-}
-
-void show_oskar_k(uint32_t color) {
-  strip.clear();
-  strip.fill(color, oskar_K[0], *(&oskar_K + 1) - oskar_K);        //  Set pixel's color (in RAM)
-  strip.show();                                           //  Update strip to match
-}
-
-void show_oskar_a(uint32_t color) {
-  strip.clear();
-  strip.fill(color, oskar_A[0], *(&oskar_A + 1) - oskar_A);        //  Set pixel's color (in RAM)
-  strip.show();                                           //  Update strip to match
-}
-
-void show_oskar_r(uint32_t color) {
-  strip.clear();
-  strip.fill(color, oskar_R[0], *(&oskar_R + 1) - oskar_R);        //  Set pixel's color (in RAM)
-  strip.show();                                           //  Update strip to match
+void show_letter(uint32_t color, int letter[], int laenge, char* namen) { //hier kommt es zur Fehlermeldung, da ich string zu char mache. Das darf man wohl nicht in c++
+    Serial.print(namen);
+    Serial.println(":"); 
+    Serial.println(letter[0]);
+    Serial.println(laenge);
+    strip.clear();
+    if (namen=="iva") letter[0]=letter[0]+93;
+    strip.fill(color,  letter[0], laenge);        //  Set pixel's color (in RAM)
+    strip.show();  
 }
 
 void colorZini(uint32_t color, int wait) {
   for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
     strip.clear();
-    strip.setPixelColor(i, strip.ColorHSV(55000, 255, 250));         //  Set pixel's color (in RAM)
-    strip.setPixelColor(i-1,strip.ColorHSV(55000, 255, 200));         //  Set pixel's color (in RAM)
-    strip.setPixelColor(i-2,strip.ColorHSV(55000, 255, 150));         //  Set pixel's color (in RAM)
-    strip.setPixelColor(i-3,strip.ColorHSV(55000, 255, 100));         //  Set pixel's color (in RAM)
-    strip.setPixelColor(i-4,strip.ColorHSV(55000, 255, 50));         //  Set pixel's color (in RAM) 
-    strip.setPixelColor(i-4,strip.ColorHSV(55000, 255, 10));         //  Set pixel's color (in RAM) 
+    strip.setPixelColor(i, strip.ColorHSV(i*1000, 255, 250));         //  Set pixel's color (in RAM)
+    strip.setPixelColor(i-1,strip.ColorHSV(i*1000, 255, 150));         //  Set pixel's color (in RAM)
+    strip.setPixelColor(i-2,strip.ColorHSV(i*1000, 255, 130));         //  Set pixel's color (in RAM)
+    strip.setPixelColor(i-3,strip.ColorHSV(i*1000, 255, 100));         //  Set pixel's color (in RAM)
+    strip.setPixelColor(i-4,strip.ColorHSV(i*1000, 255, 80));         //  Set pixel's color (in RAM) 
+    strip.setPixelColor(i-4,strip.ColorHSV(i*1000, 255, 40));         //  Set pixel's color (in RAM
+    strip.setPixelColor(i-4,strip.ColorHSV(i*1000, 255, 10));         //  Set pixel's color (in RAM) 
              
     strip.show();                          //  Update strip to match
     delay(wait);                           //  Pause for a moment
