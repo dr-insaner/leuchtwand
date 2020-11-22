@@ -34,21 +34,8 @@ int iva_A[] = {31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50};
 int iva_2[] = {51,52,53,54,55,56};
 
 //Hier möchte ich eine MAtrix definieren die aus den folgenden Spalten besteht. Da wo -1 ist gibt es keine LED
-int c1[] = {0,1,2,3,4,5,6,7};
-int c2[] = {7,-1,-1,-1,-1,-1,19};
-int c3[] = {8,-1,-1,-1,-1,-1,18};
-int c4[] = {9,-1,-1,-1,-1,-1,17};
-int c5[] = {10,11,12,13,14,15,16};
-int c6[] = {39,40,41,42,43,44,45};
-int c7[] = {-1,-1,-1,46,-1,-1,-1};
-int c8[] = {-1,-1,47,-1,50,-1,-1};
-int c9[] = {-1,48,-1,-1,-1,51,-1};
-int c10[]= {49,-1,-1,-1,-1,-1,52};
 
-const int rows = 7;
-const int columns = 10;
-
-int matrix[rows][columns];
+int matrix[10][8] = {{0,1,2,3,4,5,6,7}, {7,-1,-1,-1,-1,-1,19}, {8,-1,-1,-1,-1,-1,18}, {9,-1,-1,-1,-1,-1,17}, {10,11,12,13,14,15,16}, {39,40,41,42,43,44,45}, {-1,-1,-1,46,-1,-1,-1}, {-1,-1,47,-1,50,-1,-1}, {-1,48,-1,-1,-1,51,-1}, {49,-1,-1,-1,-1,-1,52}};
 
 void setup() {
   Serial.begin(9600);
@@ -56,17 +43,12 @@ void setup() {
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);
-
-//hier der erste Versuch aus den 1D arrays ein 2D array zu machen
-  for(int r = 0; r<rows; r++) {
-    for (int c = 0; c<columns; c++) {
-      matrix[r][c] = c1[r];
-    }
-  }
   
 }
 
 void loop() {
+
+  spaltenwischer(matrix);
 
   show_letter(strip.Color(255,   0,   0, 0), oskar_O, *(&oskar_O + 1) - oskar_O, "oskar");
   delay(1000);
@@ -90,13 +72,14 @@ void loop() {
   delay(1000);
   strip.clear();
 
-  
+
+
   colorZini(strip.Color(255,   0,   0)     , 50); // Red
   strip.clear();
     
   // Fill along the length of the strip in various colors...
-  colorWipe(strip.Color(255,   0,   0)     , 50); // Red
-  colorWipe(strip.Color(  0,   0,   0, 255), 50); // True white (not RGB white)
+  //colorWipe(strip.Color(255,   0,   0)     , 50); // Red
+  colorWipe(strip.Color(  80,   0,   0, 50), 50); // True white (not RGB white)
 
   whiteOverRainbow(75, 5);
 
@@ -105,13 +88,23 @@ void loop() {
   rainbowFade2White(3, 3, 1);
 }
 
-void show_letter(uint32_t color, int letter[], int laenge, char* namen) { //hier kommt es zur Fehlermeldung, da ich string zu char mache. Das darf man wohl nicht in c++
-    Serial.print(namen);
-    Serial.println(":"); 
-    Serial.println(letter[0]);
-    Serial.println(laenge);
+void spaltenwischer(int matrix[10][8]) {
+  for(int c=0; c<=10; c++) {
+    for(int r=0; r<=8; r++){
+      strip.setPixelColor(matrix[c][r], strip.ColorHSV(c*1000, 255, 250));
+    }
+    strip.show();
+    delay(500);
+  }
+}
+
+void show_letter(uint32_t color, int letter[], int laenge, const char* namen) { //hier kommt es zur Fehlermeldung, da ich string zu char mache. Das darf man wohl nicht in c++
+//    Serial.print(namen);
+//    Serial.println(":"); 
+//    Serial.println(letter[0]);
+//    Serial.println(laenge);
     strip.clear();
-    if (namen=="iva") letter[0]=letter[0]+93;
+    if (strcmp(namen,"iva")== 0) letter[0]=letter[0]+93;
     strip.fill(color,  letter[0], laenge);        //  Set pixel's color (in RAM)
     strip.show();  
 }
@@ -146,7 +139,7 @@ void whiteOverRainbow(int whiteSpeed, int whiteLength) {
 
   int      head          = whiteLength - 1;
   int      tail          = 0;
-  int      loops         = 3;
+  int      loops         = 2;
   int      loopNum       = 0;
   uint32_t lastTime      = millis();
   uint32_t firstPixelHue = 0;
