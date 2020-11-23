@@ -92,8 +92,11 @@ void loop() {
 
 void spaltenwischer(int matrix[36][16]) {
   for(int c=0; c<=10; c++) {
+    strip.clear();
     for(int r=0; r<=8; r++){
       strip.setPixelColor(matrix[c][r], strip.ColorHSV(c*1000, 255, 250));
+      strip.setPixelColor(matrix[c-1][r], strip.ColorHSV(c*1000, 255, 100));
+      strip.setPixelColor(matrix[c-2][r], strip.ColorHSV(c*1000, 255, 30));
     }
     strip.show();
     delay(500);
